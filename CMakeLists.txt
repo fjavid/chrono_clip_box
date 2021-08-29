@@ -16,7 +16,7 @@ cmake_minimum_required(VERSION 3.10)
 # Modify the project name if you want: 
 #--------------------------------------------------------------
 
-project(clip_entangle)
+project(chrono_clip_box)
 
 #--------------------------------------------------------------
 # === 2 ===
@@ -131,7 +131,7 @@ endif()
 # files in your project. 
 #--------------------------------------------------------------
 
-add_executable(clip clip_entangle.cpp)
+add_executable(clip main.cpp)
 
 #--------------------------------------------------------------
 # Set properties for your executable target
