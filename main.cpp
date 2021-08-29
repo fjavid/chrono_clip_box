@@ -174,10 +174,12 @@ void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
     // else
     //     texture->SetTextureFilename(GetChronoDataFile("textures/blue.png"));
     auto clip_color = chrono_types::make_shared<ChColorAsset>(ChColor(0.8f, 0.1f, 0.1f));
+    auto init_ang_velo = ChVector<>(0.0, (2.0*M_PI), 0.0);
     // auto comp_pos = ChVector<>(-0.5*clip_h, 0, 0);
     // ChQuaternion<>(1, 0, 0, 0)
     if (id % 2 != 0)
     {
+        init_ang_velo = ChVector<>((2.0*M_PI), 0.0, 0.0);
         // inertia = chVector<> (inertia(0), inertia(2), inertia(1));
         clip_color = chrono_types::make_shared<ChColorAsset>(ChColor(0.1f, 0.1f, 0.8f));
     }
@@ -224,16 +226,17 @@ void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
 
     clip->SetMass(mass);
     clip->SetInertiaXX(inertia);
-    if (id % 2 == 0)
-    {
-        // clip->SetPos_dt(ChVector<>(1.0, 1.0, 0.0));
-        clip->SetWvel_par(ChVector<>(0.0, (2.0*M_PI), 0.0));
-    }
-    else
-    {
-        // clip->SetPos_dt(ChVector<>(1.0, 1.0, 0.0));
-        clip->SetWvel_par(ChVector<>((2.0*M_PI), 0.0, 0.0));
-    }
+    // if (id % 2 == 0)
+    // {
+    //     // clip->SetPos_dt(ChVector<>(1.0, 1.0, 0.0));
+    //     clip->SetWvel_par(ChVector<>(0.0, (2.0*M_PI), 0.0));
+    // }
+    // else
+    // {
+    //     // clip->SetPos_dt(ChVector<>(1.0, 1.0, 0.0));
+    //     clip->SetWvel_par(ChVector<>((2.0*M_PI), 0.0, 0.0));
+    // }
+    clip->SetWvel_par(init_ang_velo);
     sys.Add(clip);
     clip->SetPos(pos);
     clip->SetRot(rot);
@@ -293,7 +296,7 @@ void create_model(ChSystemNSC& mphysicalSystem) {
     auto clip_iner = ChVector<>(0.11175E-6, 0.504116E-6, 0.61463E-6);
     double cclip_mass = 0.002695;
     auto cclip_iner = ChVector<>(0.125176E-6, 0.556291236E-6, 0.680161092E-6);
-    // auto cclip_iner_yz = ChVector<>(0.125176E-6, 0.680161092E-6, 0.556291236E-6);
+    auto cclip_iner_yz = ChVector<>(0.125176E-6, 0.680161092E-6, 0.556291236E-6);
     // int idx_e = 4;
     // int idy_e = 4;
     // int idz_e = 4;
