@@ -4,8 +4,8 @@
 #include "chrono/assets/ChTexture.h"
 #include "chrono/physics/ChLinkMate.h"
 #include "chrono_irrlicht/ChIrrApp.h"
-#include "utils/ChUtilsCreators.h"     //Arman: why is this
-#include "utils/ChUtilsInputOutput.h"  //Arman: Why is this
+#include "utils/ChUtilsCreators.h"
+#include "utils/ChUtilsInputOutput.h"
 #include "utils/ChUtilsGenerators.h"
 
 using namespace chrono;
@@ -104,126 +104,6 @@ void model_box(ChSystemNSC& sys, std::shared_ptr<ChBody> floor, std::shared_ptr<
 
 }
 
-
-// void create_closedclip_rot(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
-//                 const int id, ChVector<>& pos, const ChQuaternion<double>& rot,
-//                 const double clip_w, const double clip_h, const double clip_r,
-//                 const double mass, const ChMatrix33<> inertia)
-// {
-//     auto texture = chrono_types::make_shared<ChTexture>();
-//     texture->SetTextureFilename(GetChronoDataFile("textures/blue.png"));
-//     auto clip = std::make_shared<ChBody>();
-// 	clip->SetIdentifier(id);
-//     clip->GetCollisionModel()->ClearModel();
-//     clip->SetCollide(true);
-//     clip->GetCollisionModel()->SetDefaultSuggestedEnvelope(0.05);
-//     clip->GetCollisionModel()->SetDefaultSuggestedMargin(0.001);
-
-//     utils::AddCylinderGeometry(clip.get(),
-//                                 mat,
-//                                 clip_r,
-//                                 0.5*clip_w,
-//                                 ChVector<>(-0.5*clip_h, 0, 0),
-//                                 Q_ROTATE_Y_TO_Z,
-//                                 true);
-//     utils::AddCylinderGeometry(clip.get(),
-//                                 mat,
-//                                 clip_r,
-//                                 0.5*clip_w,
-//                                 ChVector<>(0.5*clip_h, 0, 0),
-//                                 Q_ROTATE_Y_TO_Z,
-//                                 true);
-//     utils::AddCylinderGeometry(clip.get(),
-//                                 mat,
-//                                 clip_r,
-//                                 0.5*clip_h,
-//                                 ChVector<>(0.0, 0, 0.5*clip_w),
-//                                 Q_ROTATE_Y_TO_X,
-//                                 true);
-//     utils::AddCylinderGeometry(clip.get(),
-//                                 mat,
-//                                 clip_r,
-//                                 0.5*clip_h,
-//                                 ChVector<>(0.0, 0, -0.5*clip_w),
-//                                 Q_ROTATE_Y_TO_X,
-//                                 true);
-    
-//     clip->SetMass(mass);
-//     clip->SetInertia(inertia);
-//     clip->GetCollisionModel()->BuildModel();
-//     sys.Add(clip);
-//     clip->SetPos(pos);
-//     // clip->SetRot(rot);
-//     clip->AddAsset(texture);
-// }
-
-void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
-                const int id, ChVector<>& pos, const ChQuaternion<double>& rot,
-                const double clip_w, const double clip_h, const double clip_r,
-                const double mass, const ChVector<> inertia)
-{
-    auto texture = chrono_types::make_shared<ChTexture>();
-    if (id % 2 == 0)
-        texture->SetTextureFilename(GetChronoDataFile("textures/pink.png"));
-    else
-        texture->SetTextureFilename(GetChronoDataFile("textures/blue.png"));
-    auto clip = std::make_shared<ChBody>();
-	clip->SetIdentifier(id);
-    // clip->GetCollisionModel()->SetDefaultSuggestedEnvelope(0.001);
-    // clip->GetCollisionModel()->SetDefaultSuggestedMargin(0.00001);
-    clip->SetCollide(true);
-    clip->GetCollisionModel()->ClearModel();
-    // clip->SetMaterialSurface(mat);
-
-    utils::AddCylinderGeometry(clip.get(),
-                                mat,
-                                clip_r,
-                                0.5*clip_w,
-                                ChVector<>(-0.5*clip_h, 0, 0),
-                                ChQuaternion<>(1, 0, 0, 0),
-                                true);
-    utils::AddCylinderGeometry(clip.get(),
-                                mat,
-                                clip_r,
-                                0.5*clip_w,
-                                ChVector<>(0.5*clip_h, 0, 0),
-                                ChQuaternion<>(1, 0, 0, 0),
-                                true);
-    utils::AddCylinderGeometry(clip.get(),
-                                mat,
-                                clip_r,
-                                0.5*clip_h,
-                                ChVector<>(0.0, 0.5*clip_w, 0),
-                                Q_ROTATE_Y_TO_X,
-                                true);
-    utils::AddCylinderGeometry(clip.get(),
-                                mat,
-                                clip_r,
-                                0.5*clip_h,
-                                ChVector<>(0.0, -0.5*clip_w, 0),
-                                Q_ROTATE_Y_TO_X,
-                                true);
-    
-    clip->GetCollisionModel()->BuildModel();
-
-    clip->SetMass(mass);
-    clip->SetInertiaXX(inertia);
-    if (id % 2 == 0)
-    {
-        // clip->SetPos_dt(ChVector<>(1.0, 1.0, 0.0));
-        clip->SetWvel_par(ChVector<>(0.0, (2.0*M_PI), 0.0));
-    }
-    else
-    {
-        // clip->SetPos_dt(ChVector<>(1.0, 1.0, 0.0));
-        clip->SetWvel_par(ChVector<>((2.0*M_PI), 0.0, 0.0));
-    }
-    sys.Add(clip);
-    clip->SetPos(pos);
-    clip->SetRot(rot);
-    clip->AddAsset(texture);
-}
-
 // void create_clip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
 //                 const int id, ChVector<>& pos, const ChQuaternion<double>& rot,
 //                 const double clip_w, const double clip_h, const double clip_r, const double clip_g,
@@ -282,6 +162,89 @@ void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
 //     clip->AddAsset(texture);
 // }
 
+
+void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
+                const int id, ChVector<>& pos, const ChQuaternion<double>& rot,
+                const double clip_w, const double clip_h, const double clip_r,
+                const double mass, const ChVector<> inertia)
+{
+    // auto texture = chrono_types::make_shared<ChTexture>();
+    // if (id % 2 == 0)
+    //     texture->SetTextureFilename(GetChronoDataFile("textures/pink.png"));
+    // else
+    //     texture->SetTextureFilename(GetChronoDataFile("textures/blue.png"));
+    auto clip_color = chrono_types::make_shared<ChColorAsset>(ChColor(0.8f, 0.1f, 0.1f));
+    // auto comp_pos = ChVector<>(-0.5*clip_h, 0, 0);
+    // ChQuaternion<>(1, 0, 0, 0)
+    if (id % 2 != 0)
+    {
+        // inertia = chVector<> (inertia(0), inertia(2), inertia(1));
+        clip_color = chrono_types::make_shared<ChColorAsset>(ChColor(0.1f, 0.1f, 0.8f));
+    }
+    
+
+    auto clip = std::make_shared<ChBody>();
+	clip->SetIdentifier(id);
+    // clip->GetCollisionModel()->SetDefaultSuggestedEnvelope(0.001);
+    // clip->GetCollisionModel()->SetDefaultSuggestedMargin(0.00001);
+    clip->SetCollide(true);
+    clip->GetCollisionModel()->ClearModel();
+    // clip->SetMaterialSurface(mat);
+
+    utils::AddCylinderGeometry(clip.get(),
+                                mat,
+                                clip_r,
+                                0.5*clip_w,
+                                ChVector<>(-0.5*clip_h, 0, 0),
+                                ChQuaternion<>(1, 0, 0, 0),
+                                true);
+    utils::AddCylinderGeometry(clip.get(),
+                                mat,
+                                clip_r,
+                                0.5*clip_w,
+                                ChVector<>(0.5*clip_h, 0, 0),
+                                ChQuaternion<>(1, 0, 0, 0),
+                                true);
+    utils::AddCylinderGeometry(clip.get(),
+                                mat,
+                                clip_r,
+                                0.5*clip_h,
+                                ChVector<>(0.0, 0.5*clip_w, 0),
+                                Q_ROTATE_Y_TO_X,
+                                true);
+    utils::AddCylinderGeometry(clip.get(),
+                                mat,
+                                clip_r,
+                                0.5*clip_h,
+                                ChVector<>(0.0, -0.5*clip_w, 0),
+                                Q_ROTATE_Y_TO_X,
+                                true);
+    
+    clip->GetCollisionModel()->BuildModel();
+
+    clip->SetMass(mass);
+    clip->SetInertiaXX(inertia);
+    if (id % 2 == 0)
+    {
+        // clip->SetPos_dt(ChVector<>(1.0, 1.0, 0.0));
+        clip->SetWvel_par(ChVector<>(0.0, (2.0*M_PI), 0.0));
+    }
+    else
+    {
+        // clip->SetPos_dt(ChVector<>(1.0, 1.0, 0.0));
+        clip->SetWvel_par(ChVector<>((2.0*M_PI), 0.0, 0.0));
+    }
+    sys.Add(clip);
+    clip->SetPos(pos);
+    clip->SetRot(rot);
+    clip->AddAsset(clip_color);
+    // if (id % 2 == 0)
+    //     clip->AddAsset(chrono_types::make_shared<ChColorAsset>(ChColor(0.8f, 0.1f, 0.1f)));
+    // else
+    //     clip->AddAsset(chrono_types::make_shared<ChColorAsset>(ChColor(0.1f, 0.1f, 0.8f)));
+    
+}
+
 void create_model(ChSystemNSC& mphysicalSystem) {
     ChVector<> gravity(0, 0, 0);
     mphysicalSystem.Set_G_acc(gravity);
@@ -330,6 +293,7 @@ void create_model(ChSystemNSC& mphysicalSystem) {
     auto clip_iner = ChVector<>(0.11175E-6, 0.504116E-6, 0.61463E-6);
     double cclip_mass = 0.002695;
     auto cclip_iner = ChVector<>(0.125176E-6, 0.556291236E-6, 0.680161092E-6);
+    // auto cclip_iner_yz = ChVector<>(0.125176E-6, 0.680161092E-6, 0.556291236E-6);
     // int idx_e = 4;
     // int idy_e = 4;
     // int idz_e = 4;
@@ -351,7 +315,7 @@ void create_model(ChSystemNSC& mphysicalSystem) {
     //         }
     auto pos = ChVector<>(0, 0, 0);
     auto rot_yz = Q_ROTATE_Y_TO_Z;
-    auto cclip_iner_yz = ChVector<>(0.125176E-6, 0.680161092E-6, 0.556291236E-6);
+    
     create_closedclip(mphysicalSystem, clip_mat, 1, 
             pos, rot,
             clip_w, clip_h, clip_r,
@@ -373,7 +337,7 @@ int main(int argc, char* argv[]) {
     // bind a simple user interface, etc. etc.)
     ChIrrApp application(&mphysicalSystem, L"Clip contact", core::dimension2d<u32>(800, 600));
 
-    application.AddTypicalLights(core::vector3df(0.f, 0.f, 10.f), core::vector3df(30.f, 80.f, 60.f), 290, 190);
+    application.AddTypicalLights(core::vector3df(0.f, 0.f, 10.f), core::vector3df(30.f, 80.f, 60.f), 200, 10);
     application.AddTypicalCamera(core::vector3df(0.0, .05, 0.15), core::vector3df(0, -0.05, 0));
 
     create_model(mphysicalSystem);
@@ -422,92 +386,3 @@ int main(int argc, char* argv[]) {
     std::cout << "simulation run time is : " << duration << std::endl;
     return 0;
 }
-
-// void create_box(ChSystemNSC& sys, std::shared_ptr<ChBody> floor, std::shared_ptr<ChMaterialSurface> mat,
-//                 const int id, ChVector<>& pos, const ChQuaternion<double>& rot,
-//                 const double box_x, const double box_y, const double box_z, const double box_t,
-//                 const double density)
-// {
-//     auto texture = chrono_types::make_shared<ChTexture>();
-//     texture->SetTextureFilename(GetChronoDataFile("textures/concrete.jpg"));
-//     // auto box_mat = chrono_types::make_shared<ChMaterialSurfaceNSC>();
-//     // box_mat->SetFriction(0.3);
-//     // box_mat->SetRestitution(0.5);
-//     auto bot = chrono_types::make_shared<ChBodyEasyBox>(box_x, box_t, box_z, density, true, true, mat);
-//     bot->SetPos(ChVector<>(0, -0.5*(box_t+box_y), 0));
-//     bot->SetId(id);
-//     sys.Add(bot);
-//     bot->AddAsset(texture);
-//     bot->GetCollisionModel()->SetFamily(6);
-//     bot->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(6);
-
-//     auto front = chrono_types::make_shared<ChBodyEasyBox>(box_x, box_y, box_t, density, false, true, mat);
-//     front->SetPos(ChVector<>(0.0, 0.0, 0.5*(box_t+box_z)));
-//     bot->SetId(id+1);
-//     sys.Add(front);
-//     front->AddAsset(texture);
-//     front->GetCollisionModel()->SetFamily(6);
-//     front->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(6);
-
-//     auto left = chrono_types::make_shared<ChBodyEasyBox>(box_t, box_y, box_z, density, true, true, mat);
-//     left->SetPos(ChVector<>(0.5*(box_t+box_x), 0.0, 0.0));
-//     bot->SetId(id+2);
-//     sys.Add(left);
-//     left->AddAsset(texture);
-//     left->GetCollisionModel()->SetFamily(6);
-//     left->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(6);
-
-//     auto top = chrono_types::make_shared<ChBodyEasyBox>(box_x, box_t, box_z, density, true, true, mat);
-//     top->SetPos(ChVector<>(0, 0.5*(box_t+box_y), 0));
-//     bot->SetId(id+3);
-//     sys.Add(top);
-//     top->AddAsset(texture);
-//     top->GetCollisionModel()->SetFamily(6);
-//     top->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(6);
-
-//     auto back = chrono_types::make_shared<ChBodyEasyBox>(box_x, box_y, box_t, density, true, true, mat);
-//     back->SetPos(ChVector<>(0.0, 0.0, -0.5*(box_t+box_z)));
-//     bot->SetId(id+4);
-//     sys.Add(back);
-//     back->AddAsset(texture);
-//     back->GetCollisionModel()->SetFamily(6);
-//     back->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(6);
-
-//     auto right = chrono_types::make_shared<ChBodyEasyBox>(box_t, box_y, box_z, density, true, true, mat);
-//     right->SetPos(ChVector<>(-0.5*(box_t+box_x), 0.0, 0.0));
-//     bot->SetId(id+5);
-//     sys.Add(right);
-//     right->AddAsset(texture);
-//     right->GetCollisionModel()->SetFamily(6);
-//     right->GetCollisionModel()->SetFamilyMaskNoCollisionWithFamily(6);
-
-//     auto link_left = chrono_types::make_shared<ChLinkMateFix>();
-//     link_left->Initialize(bot, left);
-// 	sys.Add(link_left);
-
-//     auto link_front = chrono_types::make_shared<ChLinkMateFix>();
-//     link_front->Initialize(bot, front);
-// 	sys.Add(link_front);
-
-//     auto link_right = chrono_types::make_shared<ChLinkMateFix>();
-//     link_right->Initialize(bot, right);
-// 	sys.Add(link_right);
-
-//     auto link_back = chrono_types::make_shared<ChLinkMateFix>();
-//     link_back->Initialize(bot, back);
-// 	sys.Add(link_back);
-
-//     auto link_top = chrono_types::make_shared<ChLinkMateFix>();
-//     link_top->Initialize(bot, top);
-// 	sys.Add(link_top);
-    
-//     auto box_motion = chrono_types::make_shared<ChLinkLockLock>();
-//     box_motion->Initialize(bot , floor, ChCoordsys<>(ChVector<>(0, 0, 0)));
-
-//     // auto mmotion_x = chrono_types::make_shared<ChFunction_Sine>(0, 1.0, 0.05);  // phase freq ampl
-//     // box_motion->SetMotion_X(mmotion_x);
-//     auto mmotion_y = chrono_types::make_shared<ChFunction_Sine>(0, 3.0, 0.05);  // phase freq ampl
-//     box_motion->SetMotion_Y(mmotion_y);
-//     sys.Add(box_motion);
-
-// }
