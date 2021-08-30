@@ -174,55 +174,60 @@ void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
     // else
     //     texture->SetTextureFilename(GetChronoDataFile("textures/blue.png"));
     auto clip_color = chrono_types::make_shared<ChColorAsset>(ChColor(0.8f, 0.1f, 0.1f));
-    auto init_ang_velo = ChVector<>(0.0, (2.0*M_PI), 0.0);
+    auto init_ang_velo = ChVector<>(0.0, 5.*(10.0*M_PI), 0.0);
     // auto comp_pos = ChVector<>(-0.5*clip_h, 0, 0);
     // ChQuaternion<>(1, 0, 0, 0)
     if (id % 2 != 0)
     {
-        init_ang_velo = ChVector<>((2.0*M_PI), 0.0, 0.0);
+        init_ang_velo = ChVector<>(0.0, (5.0*M_PI), 0.0);
         // inertia = chVector<> (inertia(0), inertia(2), inertia(1));
         clip_color = chrono_types::make_shared<ChColorAsset>(ChColor(0.1f, 0.1f, 0.8f));
     }
     
 
     auto clip = std::make_shared<ChBody>();
-	clip->SetIdentifier(id);
-    // clip->GetCollisionModel()->SetDefaultSuggestedEnvelope(0.001);
-    // clip->GetCollisionModel()->SetDefaultSuggestedMargin(0.00001);
+	// clip->SetIdentifier(id);
+    clip->GetCollisionModel()->SetDefaultSuggestedEnvelope(0.005);
+    clip->GetCollisionModel()->SetEnvelope(0.03);
+    clip->GetCollisionModel()->SetDefaultSuggestedMargin(0.0001);
+    // clip->GetCollisionModel()->SetMargin(0.0001);
     clip->SetCollide(true);
     clip->GetCollisionModel()->ClearModel();
     // clip->SetMaterialSurface(mat);
-
+    double added_l = 1.0*clip_r;
     utils::AddCylinderGeometry(clip.get(),
                                 mat,
                                 clip_r,
-                                0.5*clip_w,
+                                0.5*clip_w+added_l,
                                 ChVector<>(-0.5*clip_h, 0, 0),
                                 ChQuaternion<>(1, 0, 0, 0),
                                 true);
     utils::AddCylinderGeometry(clip.get(),
                                 mat,
                                 clip_r,
-                                0.5*clip_w,
+                                0.5*clip_w+added_l,
                                 ChVector<>(0.5*clip_h, 0, 0),
                                 ChQuaternion<>(1, 0, 0, 0),
                                 true);
     utils::AddCylinderGeometry(clip.get(),
                                 mat,
                                 clip_r,
-                                0.5*clip_h,
+                                0.5*clip_h+added_l,
                                 ChVector<>(0.0, 0.5*clip_w, 0),
                                 Q_ROTATE_Y_TO_X,
                                 true);
     utils::AddCylinderGeometry(clip.get(),
                                 mat,
                                 clip_r,
-                                0.5*clip_h,
+                                0.5*clip_h+added_l,
                                 ChVector<>(0.0, -0.5*clip_w, 0),
                                 Q_ROTATE_Y_TO_X,
                                 true);
     
     clip->GetCollisionModel()->BuildModel();
+
+    clip->SetPos(pos);
+    clip->SetRot(rot);
 
     clip->SetMass(mass);
     clip->SetInertiaXX(inertia);
@@ -238,13 +243,12 @@ void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
     // }
     clip->SetWvel_par(init_ang_velo);
     sys.Add(clip);
-    clip->SetPos(pos);
-    clip->SetRot(rot);
     clip->AddAsset(clip_color);
     // if (id % 2 == 0)
     //     clip->AddAsset(chrono_types::make_shared<ChColorAsset>(ChColor(0.8f, 0.1f, 0.1f)));
     // else
     //     clip->AddAsset(chrono_types::make_shared<ChColorAsset>(ChColor(0.1f, 0.1f, 0.8f)));
+    std::cout << "clip "<< id << " Envelope is : " << clip->GetCollisionModel()->GetEnvelope() << std::endl;
     
 }
 
@@ -323,7 +327,7 @@ void create_model(ChSystemNSC& mphysicalSystem) {
             pos, rot,
             clip_w, clip_h, clip_r,
             cclip_mass, cclip_iner);
-    pos = ChVector<>(0.5*clip_h, 0, 0);
+    pos = ChVector<>(0.5*clip_h+0*clip_r, 0, 0);
     create_closedclip(mphysicalSystem, clip_mat, 2, 
             pos, rot_yz,
             clip_w, clip_h, clip_r,
@@ -341,7 +345,7 @@ int main(int argc, char* argv[]) {
     ChIrrApp application(&mphysicalSystem, L"Clip contact", core::dimension2d<u32>(800, 600));
 
     application.AddTypicalLights(core::vector3df(0.f, 0.f, 10.f), core::vector3df(30.f, 80.f, 60.f), 200, 10);
-    application.AddTypicalCamera(core::vector3df(0.0, .05, 0.15), core::vector3df(0, -0.05, 0));
+    application.AddTypicalCamera(core::vector3df(0.0, .0, 0.15), core::vector3df(0.01, -0.0, 0));
 
     create_model(mphysicalSystem);
 
@@ -356,21 +360,21 @@ int main(int argc, char* argv[]) {
     mphysicalSystem.SetSolver(solver);
 
     double dT = 0.001;
-    double endT = 10.0;
+    double endT = 5.0;
     int n_frames = 200;
     int f_interval = (int) (endT/dT/n_frames);
     std::vector<double> time_array;
     std::vector<double> ke_array;
     application.SetTimestep(dT);
-    application.SetTryRealtime(true);
+    // application.SetTryRealtime(true);
     // application.SetPOVraySave(true);
     // application.SetPOVraySaveInterval(5);
-    application.SetVideoframeSave(true);
-    application.SetVideoframeSaveInterval(f_interval);
+    // application.SetVideoframeSave(true);
+    // application.SetVideoframeSaveInterval(f_interval);
     // application.GetSystem()->SetChTime(1.0);
-    std::cout << "maxi recovery spped is: " << application.GetSystem()->GetMaxPenetrationRecoverySpeed() << std::endl;
-    // application.GetSystem()->SetMaxPenetrationRecoverySpeed(0.3);
-    // application.GetSystem()->SetMinBounceSpeed(0.6);
+    // std::cout << "max recovery spped is: " << application.GetSystem()->GetMaxPenetrationRecoverySpeed() << std::endl;
+    application.GetSystem()->SetMaxPenetrationRecoverySpeed(0.0025);
+    application.GetSystem()->SetMinBounceSpeed(0.1);
     double start = std::clock();
     while (application.GetDevice()->run()) {
         // std::cout << "system stepsize is : " << application.GetSystem()->GetStep() << std::endl;
@@ -382,8 +386,8 @@ int main(int argc, char* argv[]) {
         application.EndScene();
         time_array.push_back(application.GetSystem()->GetChTime());
         // ke_array.push_back(application.GetSystem()->ComputeTotalKE());
-        if (application.GetSystem()->GetChTime() > endT)
-            break;
+        // if (application.GetSystem()->GetChTime() > endT)
+        //     break;
     }
     double duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
     std::cout << "simulation run time is : " << duration << std::endl;
