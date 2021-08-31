@@ -196,28 +196,28 @@ void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
 
     double added_l = 0.0*clip_r;
 
-    utils::AddCylinderGeometry(clip.get(),
+    utils::AddCapsuleGeometry(clip.get(),
                                 mat,
                                 clip_r,
                                 0.5*clip_w+added_l,
                                 ChVector<>(-0.5*clip_h, 0, 0),
                                 ChQuaternion<>(1, 0, 0, 0),
                                 true);
-    utils::AddCylinderGeometry(clip.get(),
+    utils::AddCapsuleGeometry(clip.get(),
                                 mat,
                                 clip_r,
                                 0.5*clip_w+added_l,
                                 ChVector<>(0.5*clip_h, 0, 0),
                                 ChQuaternion<>(1, 0, 0, 0),
                                 true);
-    utils::AddCylinderGeometry(clip.get(),
+    utils::AddCapsuleGeometry(clip.get(),
                                 mat,
                                 clip_r,
                                 0.5*clip_h+added_l,
                                 ChVector<>(0.0, 0.5*clip_w, 0),
                                 Q_ROTATE_Y_TO_X,
                                 true);
-    utils::AddCylinderGeometry(clip.get(),
+    utils::AddCapsuleGeometry(clip.get(),
                                 mat,
                                 clip_r,
                                 0.5*clip_h+added_l,
