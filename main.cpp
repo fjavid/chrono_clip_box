@@ -8,6 +8,8 @@
 #include "utils/ChUtilsInputOutput.h"
 #include "utils/ChUtilsGenerators.h"
 
+#include <random>
+
 using namespace chrono;
 using namespace chrono::irrlicht;
 
@@ -173,13 +175,19 @@ void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
     //     texture->SetTextureFilename(GetChronoDataFile("textures/pink.png"));
     // else
     //     texture->SetTextureFilename(GetChronoDataFile("textures/blue.png"));
+
+    std::random_device rd;
+    std::default_random_engine eng(rd());
+    std::uniform_real_distribution<float> distr(0.0, 1.0);
+
     auto clip_color = chrono_types::make_shared<ChColorAsset>(ChColor(0.8f, 0.1f, 0.1f));
-    auto init_ang_velo = ChVector<>(0.0, (20.0*M_PI), 0.0);
+    auto init_ang_velo = (5.0*M_PI) * ChVector<>(distr(eng), distr(eng), distr(eng));
+    auto init_velo = (0.05) * ChVector<>(distr(eng), distr(eng), distr(eng));
     // auto comp_pos = ChVector<>(-0.5*clip_h, 0, 0);
     // ChQuaternion<>(1, 0, 0, 0)
     if (id % 2 != 0)
     {
-        init_ang_velo = ChVector<>((20.0*M_PI), 0.0, 10.0*M_PI);
+        // init_ang_velo = ChVector<>((20.0*M_PI), 0.0, 10.0*M_PI);
         // inertia = chVector<> (inertia(0), inertia(2), inertia(1));
         clip_color = chrono_types::make_shared<ChColorAsset>(ChColor(0.1f, 0.1f, 0.8f));
     }
@@ -194,30 +202,30 @@ void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
     clip->GetCollisionModel()->ClearModel();
     // clip->SetMaterialSurface(mat);
 
-    double added_l = 0.0*clip_r;
+    double added_l = 1.0*clip_r;
 
-    utils::AddCapsuleGeometry(clip.get(),
+    utils::AddCylinderGeometry(clip.get(),
                                 mat,
                                 clip_r,
                                 0.5*clip_w+added_l,
                                 ChVector<>(-0.5*clip_h, 0, 0),
                                 ChQuaternion<>(1, 0, 0, 0),
                                 true);
-    utils::AddCapsuleGeometry(clip.get(),
+    utils::AddCylinderGeometry(clip.get(),
                                 mat,
                                 clip_r,
                                 0.5*clip_w+added_l,
                                 ChVector<>(0.5*clip_h, 0, 0),
                                 ChQuaternion<>(1, 0, 0, 0),
                                 true);
-    utils::AddCapsuleGeometry(clip.get(),
+    utils::AddCylinderGeometry(clip.get(),
                                 mat,
                                 clip_r,
                                 0.5*clip_h+added_l,
                                 ChVector<>(0.0, 0.5*clip_w, 0),
                                 Q_ROTATE_Y_TO_X,
                                 true);
-    utils::AddCapsuleGeometry(clip.get(),
+    utils::AddCylinderGeometry(clip.get(),
                                 mat,
                                 clip_r,
                                 0.5*clip_h+added_l,
@@ -229,17 +237,8 @@ void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
 
     clip->SetMass(mass);
     clip->SetInertiaXX(inertia);
-    // if (id % 2 == 0)
-    // {
-    //     // clip->SetPos_dt(ChVector<>(1.0, 1.0, 0.0));
-    //     clip->SetWvel_par(ChVector<>(0.0, (2.0*M_PI), 0.0));
-    // }
-    // else
-    // {
-    //     // clip->SetPos_dt(ChVector<>(1.0, 1.0, 0.0));
-    //     clip->SetWvel_par(ChVector<>((2.0*M_PI), 0.0, 0.0));
-    // }
     clip->SetWvel_par(init_ang_velo);
+    clip->SetPos_dt(init_velo);
     sys.Add(clip);
     clip->SetPos(pos);
     clip->SetRot(rot);
@@ -336,37 +335,51 @@ void create_model(ChSystemNSC& mphysicalSystem) {
     // clip_mat->SetDampingF(0.001);
     clip_mat->SetRestitution(0.5f);
 
-    auto rot = QUNIT; //Q_ROTATE_X_TO_Y; //ChQuaternion<double>(0.7565, 0, 0.6, 0.8);
     double clip_w = 0.015;
     double clip_h = 0.04;
     double clip_r = 0.001;
     double clip_g = 0.004;
-    double clip_mass = 0.002471;
-    auto clip_iner = ChVector<>(0.11175E-6, 0.504116E-6, 0.61463E-6);
     double cclip_mass = 0.002695;
-    auto cclip_iner = ChVector<>(0.125176E-6, 0.556291236E-6, 0.680161092E-6);
-    auto cclip_iner_yz = ChVector<>(0.125176E-6, 0.680161092E-6, 0.556291236E-6);
+    auto cclip_iner_odd = ChVector<>(0.125176E-6, 0.556291236E-6, 0.680161092E-6);
+    auto cclip_iner_even = ChVector<>(0.125176E-6, 0.680161092E-6, 0.556291236E-6);
+    auto rot_odd = QUNIT; //Q_ROTATE_X_TO_Y; //ChQuaternion<double>(0.7565, 0, 0.6, 0.8);
+    auto rot_even = Q_ROTATE_Y_TO_Z; //Q_ROTATE_X_TO_Y; //ChQuaternion<double>(0.7565, 0, 0.6, 0.8);
 
-    double torus_r = 0.01;
-    double torus_t = 0.001;
-    int torus_nseg = 20;
-    double torus_angle = 360.;
-    double torus_mass = 0.003;
-    auto torus_iner = ChVector<>(0.12E-6, 0.7E-6, 0.7E-6);
+    int n_clips = 10;
+    for (int nc=0; nc<n_clips; ++nc)
+    {
+        auto pos = ChVector<>(0.75*nc*clip_h, 0, 0);
+        if (nc % 2 == 0)
+            create_closedclip(mphysicalSystem, clip_mat, nc, 
+                pos, rot_even,
+                clip_w, clip_h, clip_r,
+                cclip_mass, cclip_iner_even);
+        else
+            create_closedclip(mphysicalSystem, clip_mat, nc, 
+                pos, rot_odd,
+                clip_w, clip_h, clip_r,
+                cclip_mass, cclip_iner_odd);
+    }
+    // double torus_r = 0.01;
+    // double torus_t = 0.001;
+    // int torus_nseg = 20;
+    // double torus_angle = 360.;
+    // double torus_mass = 0.003;
+    // auto torus_iner = ChVector<>(0.12E-6, 0.7E-6, 0.7E-6);
 
-    auto pos = ChVector<>(0, 0, 0);
-    auto rot_yz = Q_ROTATE_Y_TO_Z;
+    // auto pos = ChVector<>(0, 0, 0);
+    // auto rot_yz = Q_ROTATE_Y_TO_Z;
 
-    create_torus(mphysicalSystem, clip_mat, 1, 
-            pos, rot,
-            torus_r, torus_t, torus_nseg, torus_angle,
-            torus_mass, torus_iner);
+    // create_torus(mphysicalSystem, clip_mat, 1, 
+    //         pos, rot,
+    //         torus_r, torus_t, torus_nseg, torus_angle,
+    //         torus_mass, torus_iner);
 
-    pos = ChVector<>(1.5*torus_r, 0, 0);
-    create_torus(mphysicalSystem, clip_mat, 1, 
-            pos, rot_yz,
-            torus_r, torus_t, torus_nseg, torus_angle,
-            torus_mass, torus_iner);
+    // pos = ChVector<>(1.5*torus_r, 0, 0);
+    // create_torus(mphysicalSystem, clip_mat, 1, 
+    //         pos, rot_yz,
+    //         torus_r, torus_t, torus_nseg, torus_angle,
+    //         torus_mass, torus_iner);
     
     // create_closedclip(mphysicalSystem, clip_mat, 1, 
     //         pos, rot,
@@ -390,7 +403,7 @@ int main(int argc, char* argv[]) {
     ChIrrApp application(&mphysicalSystem, L"Clip contact", core::dimension2d<u32>(800, 600));
 
     application.AddTypicalLights(core::vector3df(0.f, 0.f, 10.f), core::vector3df(30.f, 80.f, 60.f), 200, 10);
-    application.AddTypicalCamera(core::vector3df(0.0, .05, 0.15), core::vector3df(0, -0.05, 0));
+    application.AddTypicalCamera(core::vector3df(0.0, .0, 0.1), core::vector3df(0.75*5*0.04, 0.0, 0));
 
     create_model(mphysicalSystem);
 
@@ -420,7 +433,7 @@ int main(int argc, char* argv[]) {
 
     // application.GetSystem()->SetChTime(1.0);
     // std::cout << "maxi recovery spped is: " << application.GetSystem()->GetMaxPenetrationRecoverySpeed() << std::endl;
-    application.GetSystem()->SetMaxPenetrationRecoverySpeed(0.025);
+    application.GetSystem()->SetMaxPenetrationRecoverySpeed(0.03);
     application.GetSystem()->SetMinBounceSpeed(0.1);
     double start = std::clock();
     while (application.GetDevice()->run()) {
