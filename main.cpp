@@ -174,12 +174,12 @@ void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
     // else
     //     texture->SetTextureFilename(GetChronoDataFile("textures/blue.png"));
     auto clip_color = chrono_types::make_shared<ChColorAsset>(ChColor(0.8f, 0.1f, 0.1f));
-    auto init_ang_velo = ChVector<>(0.0, 5.*(10.0*M_PI), 0.0);
+    auto init_ang_velo = ChVector<>(0.0, (10.0*M_PI), 0.0);
     // auto comp_pos = ChVector<>(-0.5*clip_h, 0, 0);
     // ChQuaternion<>(1, 0, 0, 0)
     if (id % 2 != 0)
     {
-        init_ang_velo = ChVector<>(0.0, (5.0*M_PI), 0.0);
+        init_ang_velo = ChVector<>(20.0*M_PI, 0.0, (10.0*M_PI));
         // inertia = chVector<> (inertia(0), inertia(2), inertia(1));
         clip_color = chrono_types::make_shared<ChColorAsset>(ChColor(0.1f, 0.1f, 0.8f));
     }
@@ -187,9 +187,9 @@ void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
 
     auto clip = std::make_shared<ChBody>();
 	// clip->SetIdentifier(id);
-    clip->GetCollisionModel()->SetDefaultSuggestedEnvelope(0.005);
+    // clip->GetCollisionModel()->SetDefaultSuggestedEnvelope(0.03);
     clip->GetCollisionModel()->SetEnvelope(0.03);
-    clip->GetCollisionModel()->SetDefaultSuggestedMargin(0.0001);
+    clip->GetCollisionModel()->SetDefaultSuggestedMargin(0.0002);
     // clip->GetCollisionModel()->SetMargin(0.0001);
     clip->SetCollide(true);
     clip->GetCollisionModel()->ClearModel();
@@ -248,7 +248,7 @@ void create_closedclip(ChSystemNSC& sys, std::shared_ptr<ChMaterialSurface> mat,
     //     clip->AddAsset(chrono_types::make_shared<ChColorAsset>(ChColor(0.8f, 0.1f, 0.1f)));
     // else
     //     clip->AddAsset(chrono_types::make_shared<ChColorAsset>(ChColor(0.1f, 0.1f, 0.8f)));
-    std::cout << "clip "<< id << " Envelope is : " << clip->GetCollisionModel()->GetEnvelope() << std::endl;
+    // std::cout << "clip "<< id << " Envelope is : " << clip->GetCollisionModel()->GetEnvelope() << std::endl;
     
 }
 
@@ -370,7 +370,7 @@ int main(int argc, char* argv[]) {
     // application.SetPOVraySave(true);
     // application.SetPOVraySaveInterval(5);
     // application.SetVideoframeSave(true);
-    // application.SetVideoframeSaveInterval(f_interval);
+    // application.SetVideoframeSaveInterval(20);
     // application.GetSystem()->SetChTime(1.0);
     // std::cout << "max recovery spped is: " << application.GetSystem()->GetMaxPenetrationRecoverySpeed() << std::endl;
     application.GetSystem()->SetMaxPenetrationRecoverySpeed(0.0025);
